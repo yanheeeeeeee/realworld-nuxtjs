@@ -52,6 +52,8 @@
 </template>
 <script>
 import { login, register } from "~~/api/user";
+// 仅在客户端加载 js-cookie, 用于在客户端设置cookie
+const Cookie = process.client ? require('js-cookie') : undefined
 export default {
 	name: "LoginPage",
 	data() {
@@ -61,7 +63,7 @@ export default {
 				email: "",
 				password: "",
 			},
-			errors:""
+			errors: "",
 		};
 	},
 	computed: {
@@ -72,18 +74,18 @@ export default {
 	methods: {
 		async onSubmit() {
 			try {
-				if (this.isLogin) {
-					const { data } = await login({ user: this.user });
-					console.log(data);
-					this.$router.push("/");
-				} else {
-					const { data } = await register({ user: this.user });
-					console.log(data);
-					this.$router.push("/");
-				}
+				const { data } = await (this.isLogin ? login({ user: this.user }) : register({ user: this.user }));
+				console.log(data);
+				// 将登录状态存入vuex中, 方便全局取用
+				this.$store.commit('setUser', data.user)
+				
+				// 将登录状态存入Cookie中, 防止刷新页面时数据丢失
+				// 同时可以使服务端能读取到登录状态
+				Cookie.set('user',JSON.stringify(data.user))
+				this.$router.push("/");
 			} catch (error) {
 				console.dir(error);
-				this.errors = error.response.data.errors
+				this.errors = error.response.data.errors;
 			}
 		},
 	},
