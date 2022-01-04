@@ -10,12 +10,16 @@
 					</p>
 
 					<ul class="error-messages">
+						<template v-for="(messages, key) in errors">
+							<li v-for="(message, index) in messages" :key="index">{{key}} {{message}}</li>
+						</template>
 					</ul>
 
-					<form>
+					<form @submit.prevent="onSubmit">
 						<fieldset class="form-group" v-if="!isLogin">
 							<input
 								class="form-control form-control-lg"
+								v-model="user.username"
 								type="text"
 								placeholder="Your Name"
 								required
@@ -24,6 +28,7 @@
 						<fieldset class="form-group">
 							<input
 								class="form-control form-control-lg"
+								v-model="user.email"
 								type="email"
 								placeholder="Email"
 								required
@@ -32,6 +37,7 @@
 						<fieldset class="form-group">
 							<input
 								class="form-control form-control-lg"
+								v-model="user.password"
 								type="password"
 								placeholder="Password"
 								required
@@ -45,13 +51,42 @@
 	</div>
 </template>
 <script>
+import { login, register } from "~~/api/user";
 export default {
 	name: "LoginPage",
+	data() {
+		return {
+			user: {
+				username: "",
+				email: "",
+				password: "",
+			},
+			errors:""
+		};
+	},
 	computed: {
 		isLogin() {
 			return this.$route.name === "login";
 		},
-	}
+	},
+	methods: {
+		async onSubmit() {
+			try {
+				if (this.isLogin) {
+					const { data } = await login({ user: this.user });
+					console.log(data);
+					this.$router.push("/");
+				} else {
+					const { data } = await register({ user: this.user });
+					console.log(data);
+					this.$router.push("/");
+				}
+			} catch (error) {
+				console.dir(error);
+				this.errors = error.response.data.errors
+			}
+		},
+	},
 };
 </script>
 <style lang=""></style>
