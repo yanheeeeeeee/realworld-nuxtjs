@@ -1,5 +1,7 @@
 module.exports = {
 	router: {
+    // 自定义活动路由类名
+    linkActiveClass:"active", 
 		// 自定义路由表
 		extendRoutes(routes, resolve) {
 			// 清空nuxtJs默认生成的路由表
