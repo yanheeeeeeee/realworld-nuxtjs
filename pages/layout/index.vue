@@ -5,27 +5,31 @@
 			<div class="container">
 				<nuxt-link class="navbar-brand" to="/">conduit</nuxt-link>
 				<ul class="nav navbar-nav pull-xs-right">
-					<li class="nav-item">
-						<nuxt-link class="nav-link" to="/" exact>Home</nuxt-link>
-					</li>
-					<li class="nav-item">
-						<nuxt-link class="nav-link" to="/editor"> <i class="ion-compose"></i>&nbsp;New Article </nuxt-link>
-					</li>
-					<li class="nav-item">
-						<nuxt-link class="nav-link" to="/setting"> <i class="ion-gear-a"></i>&nbsp;Settings </nuxt-link>
-					</li>
-					<li class="nav-item">
-						<nuxt-link class="nav-link" to="/login">Sign in</nuxt-link>
-					</li>
-					<li class="nav-item">
-						<nuxt-link class="nav-link" to="/register">Sign up</nuxt-link>
-					</li>
-					<li class="nav-item">
-						<nuxt-link class="nav-link" to="/profile/lpz999">
-							<img class="user-pic" src="https://pic3.zhimg.com/cb962ef295393ea6b4471f50d18812fd_is.jpg" />
-							lpz999
-						</nuxt-link>
-					</li>
+					<template v-if="user">
+						<li class="nav-item">
+							<nuxt-link class="nav-link" to="/" exact>Home</nuxt-link>
+						</li>
+						<li class="nav-item">
+							<nuxt-link class="nav-link" to="/editor"> <i class="ion-compose"></i>&nbsp;New Article </nuxt-link>
+						</li>
+						<li class="nav-item">
+							<nuxt-link class="nav-link" to="/setting"> <i class="ion-gear-a"></i>&nbsp;Settings </nuxt-link>
+						</li>
+						<li class="nav-item">
+							<nuxt-link class="nav-link" :to="'/profile/' + user.username">
+								<img class="user-pic" :src="user.image||'/images/no-avatar.png'" />
+								{{ user.username }}
+							</nuxt-link>
+						</li>
+					</template>
+					<template v-else>
+						<li class="nav-item">
+							<nuxt-link class="nav-link" to="/login">Sign in</nuxt-link>
+						</li>
+						<li class="nav-item">
+							<nuxt-link class="nav-link" to="/register">Sign up</nuxt-link>
+						</li>
+					</template>
 				</ul>
 			</div>
 		</nav>
@@ -46,7 +50,11 @@
 	</div>
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
 	name: "Layout",
+	computed: {
+		...mapState(["user"]),
+	},
 };
 </script>

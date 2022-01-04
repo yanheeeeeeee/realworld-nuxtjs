@@ -24,6 +24,8 @@ export const actions = {
 	// nuxtServerInit 是一个特殊的action, 它仅会在服务端渲染期间自动运行
 	// 它的第二个参数为页面的上下文对象 context
 	nuxtServerInit({ commit }, { req }) {
+		let user = null;
+    
 		// 当在客户端登录过后, 会创建一个cookie, 其中包含了登录状态
 		// 使用 cookieparser 把 cookie 字符串转为js对象
 		if (req.headers.cookie) {
@@ -36,7 +38,6 @@ export const actions = {
 			}
 		}
 		// 将登录状态存储到vuex中
-    console.log(user);
 		commit("setUser", user);
 	},
 };
