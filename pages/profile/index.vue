@@ -74,7 +74,9 @@
 </template>
 <script>
 export default {
-  name:"UserProfilePage"
+	// 路由跳转当前页面时会自动调用该中间件进行校验
+	middleware: "auth",
+	name: "UserProfilePage",
 };
 </script>
 <style lang=""></style>

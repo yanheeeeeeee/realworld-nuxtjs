@@ -55,6 +55,7 @@ import { login, register } from "~~/api/user";
 // 仅在客户端加载 js-cookie, 用于在客户端设置cookie
 const Cookie = process.client ? require('js-cookie') : undefined
 export default {
+	middleware:"no-auth",
 	name: "LoginPage",
 	data() {
 		return {

@@ -33,7 +33,7 @@ module.exports = {
               // 用户个人资料页
               {
                 name:'profile',
-                path:'profile/:username',  
+                path:'profile/:username',
                 component: resolve(__dirname, "pages/profile"),
               },
               // 设置页
