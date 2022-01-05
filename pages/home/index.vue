@@ -39,8 +39,8 @@
 							</button>
 						</div>
 						<nuxt-link to="" class="preview-link">
-							<h1>{{article.title}}</h1>
-							<p>{{article.description}}</p>
+							<h1>{{ article.title }}</h1>
+							<p>{{ article.description }}</p>
 							<span>Read more...</span>
 						</nuxt-link>
 					</div>
@@ -63,6 +63,14 @@
 					</div>
 				</div>
 			</div>
+
+			<nav>
+				<ul class="pagination">
+					<li class="page-item" :class="{active: pageNum === page}" v-for="pageNum in totalPage" :key="pageNum">
+						<nuxt-link class="page-link" :to="`/?page=${pageNum}`">{{pageNum}}</nuxt-link>
+					</li>
+				</ul>
+			</nav>
 		</div>
 	</div>
 </template>
@@ -70,14 +78,33 @@
 import { articles } from "~~/api/article";
 export default {
 	name: "HomePage",
-	async asyncData() {
+	// 默认情况下, query参数改变不会重新触发asyncData方法
+	// 可以使用watchQuery属性来监听query参数
+	// 当被监听的query参数变更时, 会重新调用组件中的所有方法(asyncData, fetch等)
+	watchQuery: ['page'],
+	// asyncData 会在服务端渲染或者路由更新之前被调用
+	// 它的第一个参数为上下文context
+	// 它返回的数据会合并到data中
+	async asyncData({query}) {
 		// 获取首页全部内容
-		const { data } = await articles();
-		console.log(data);
+		const page = parseInt(query.page || 1);
+		const limit = 2
+		const { data } = await articles({
+			limit: limit,
+			offset: (page - 1) * limit,
+		});
 		return {
 			articles: data.articles,
 			articlesCount: data.articlesCount,
+			limit,
+			page
 		};
+	},
+	computed: {
+		// 总页数
+		totalPage() {
+			return Math.ceil(this.articlesCount / this.limit);
+		},
 	},
 	methods: {
 		// 点赞
