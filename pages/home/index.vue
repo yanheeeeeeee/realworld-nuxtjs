@@ -51,7 +51,9 @@
 						<p>Popular Tags</p>
 
 						<div class="tag-list">
-							<a href="" v-for="tag in tags" :key="tag" class="tag-pill tag-default">{{tag}}</a>
+							<nuxt-link v-for="tag in tags" :to="`/?tag=${tag}`" :key="tag" class="tag-pill tag-default">{{
+								tag
+							}}</nuxt-link>
 						</div>
 					</div>
 				</div>
@@ -59,8 +61,8 @@
 
 			<nav>
 				<ul class="pagination">
-					<li class="page-item" :class="{active: pageNum === page}" v-for="pageNum in totalPage" :key="pageNum">
-						<nuxt-link class="page-link" :to="`/?page=${pageNum}`">{{pageNum}}</nuxt-link>
+					<li class="page-item" :class="{ active: pageNum === page }" v-for="pageNum in totalPage" :key="pageNum">
+						<nuxt-link class="page-link" :to="`/?page=${pageNum}&tag=${$route.query.tag}`">{{ pageNum }}</nuxt-link>
 					</li>
 				</ul>
 			</nav>
@@ -68,36 +70,48 @@
 	</div>
 </template>
 <script>
-import { articles, getTag } from "~~/api/article";
+import { getArticles, getTag } from "~~/api/article";
 export default {
 	name: "HomePage",
 	// 默认情况下, query参数改变不会重新触发asyncData方法
 	// 可以使用watchQuery属性来监听query参数
 	// 当被监听的query参数变更时, 会重新调用组件中的所有方法(asyncData, fetch等)
-	watchQuery: ['page'],
+	watchQuery: ["page","tag"],
 	// asyncData 会在服务端渲染或者路由更新之前被调用
 	// 它的第一个参数为上下文context
 	// 它返回的数据会合并到data中
-	async asyncData({query}) {
-		// 获取首页全部内容
-		const page = parseInt(query.page || 1);
-		const limit = 2
-		const { data } = await articles({
-			limit: limit,
-			offset: (page - 1) * limit,
-		});
+	async asyncData({ query }) {
+		try {
+			// 获取首页全部内容
+			const page = parseInt(query.page || 1);
+			const tag = query.tag || undefined;
+			const limit = 2;
+			const getArticlesTask = getArticles({
+				limit: limit,
+				offset: (page - 1) * limit,
+				tag
+			});
+			
 
-		// 获取文章标签列表
-		// 标签列表需要SEO, 所以需要放到asyncData中
-		const { data: tagData } = await getTag()
+			// 获取文章标签列表
+			// 标签列表需要SEO, 所以需要放到asyncData中
+			const getTagTask = getTag();
 
-		return {
-			articles: data.articles,
-			articlesCount: data.articlesCount,
-			limit,
-			page,
-			tags: tagData.tags
-		};
+			// 使用Promise.all方法并行请求, 提高加载速度
+			const [articleRes, tagRes] = await Promise.all([getArticlesTask, getTagTask]);
+			const { articles, articlesCount } = articleRes.data;
+			const { tags } = tagRes.data;
+
+			return {
+				articles,
+				articlesCount,
+				limit,
+				page,
+				tags,
+			};
+		} catch (error) {
+			console.log(error);
+		}
 	},
 	computed: {
 		// 总页数

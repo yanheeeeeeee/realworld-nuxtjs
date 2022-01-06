@@ -9,7 +9,7 @@ import request from "~~/utils/request";
  * @param {string} offset 
  * @returns 
  */
-export const articles = params => {
+export const getArticles = params => {
 	return request({
 		method: "GET",
 		url:"/articles",
