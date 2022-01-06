@@ -1,4 +1,4 @@
-import request from "~~/utils/request";
+import { request } from "@/plugins/request";
 
 /**
  * 获取首页全部内容
@@ -24,15 +24,13 @@ export const getArticles = params => {
  * @param {string} offset 
  * @returns 
  */
- export const feedArticles = params => {
+ export const getFeedArticles = params => {
 	return request({
 		method: "GET",
 		url:"/articles/feed",
 		params
 	});
 }
-
-
 
 /**
  * 获取标签列表

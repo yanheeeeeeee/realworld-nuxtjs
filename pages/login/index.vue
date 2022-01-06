@@ -76,7 +76,6 @@ export default {
 		async onSubmit() {
 			try {
 				const { data } = await (this.isLogin ? login({ user: this.user }) : register({ user: this.user }));
-				console.log(data);
 				// 将登录状态存入vuex中, 方便全局取用
 				this.$store.commit('setUser', data.user)
 				
