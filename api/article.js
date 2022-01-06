@@ -12,7 +12,7 @@ import request from "~~/utils/request";
 export const articles = params => {
 	return request({
 		method: "GET",
-		url:"articles",
+		url:"/articles",
 		params
 	});
 }
@@ -27,7 +27,21 @@ export const articles = params => {
  export const feedArticles = params => {
 	return request({
 		method: "GET",
-		url:"articles/feed",
+		url:"/articles/feed",
+		params
+	});
+}
+
+
+
+/**
+ * 获取标签列表
+ * @returns 
+ */
+ export const getTag = params => {
+	return request({
+		method: "GET",
+		url:"/tags",
 		params
 	});
 }

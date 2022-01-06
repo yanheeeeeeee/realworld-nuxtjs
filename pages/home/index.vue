@@ -51,14 +51,7 @@
 						<p>Popular Tags</p>
 
 						<div class="tag-list">
-							<a href="" class="tag-pill tag-default">programming</a>
-							<a href="" class="tag-pill tag-default">javascript</a>
-							<a href="" class="tag-pill tag-default">emberjs</a>
-							<a href="" class="tag-pill tag-default">angularjs</a>
-							<a href="" class="tag-pill tag-default">react</a>
-							<a href="" class="tag-pill tag-default">mean</a>
-							<a href="" class="tag-pill tag-default">node</a>
-							<a href="" class="tag-pill tag-default">rails</a>
+							<a href="" v-for="tag in tags" :key="tag" class="tag-pill tag-default">{{tag}}</a>
 						</div>
 					</div>
 				</div>
@@ -75,7 +68,7 @@
 	</div>
 </template>
 <script>
-import { articles } from "~~/api/article";
+import { articles, getTag } from "~~/api/article";
 export default {
 	name: "HomePage",
 	// 默认情况下, query参数改变不会重新触发asyncData方法
@@ -93,11 +86,17 @@ export default {
 			limit: limit,
 			offset: (page - 1) * limit,
 		});
+
+		// 获取文章标签列表
+		// 标签列表需要SEO, 所以需要放到asyncData中
+		const { data: tagData } = await getTag()
+
 		return {
 			articles: data.articles,
 			articlesCount: data.articlesCount,
 			limit,
-			page
+			page,
+			tags: tagData.tags
 		};
 	},
 	computed: {
