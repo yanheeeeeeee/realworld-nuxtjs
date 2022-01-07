@@ -68,3 +68,16 @@ export const getArticles = params => {
 		url:`/articles/${slug}/favorite`
 	});
 }
+
+
+/**
+ * 获取文章详情
+ * @param {string} slug 文章slug
+ * @returns 
+ */
+ export const getArticle = slug => {
+	return request({
+		method: "GET",
+		url:`/articles/${slug}`
+	});
+}

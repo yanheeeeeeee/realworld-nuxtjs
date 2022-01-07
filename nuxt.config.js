@@ -48,7 +48,7 @@ module.exports = {
                 path:'editor',  
                 component: resolve(__dirname, "pages/editor"),
               },
-              // 创建文章
+              // 文章详情
               {
                 name:'article',
                 path:'article/:slug',  
