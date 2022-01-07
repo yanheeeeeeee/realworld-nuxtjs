@@ -54,7 +54,7 @@
 								<nuxt-link :to="`/profile/${article.author.username}}`" class="author">{{
 									article.author.username
 								}}</nuxt-link>
-								<span class="date">{{ article.updatedAt }}</span>
+								<span class="date">{{ article.updatedAt | data('MMM DD, YYYY') }}</span>
 							</div>
 							<button
 								class="btn btn-outline-primary btn-sm pull-xs-right"
