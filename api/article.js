@@ -43,3 +43,28 @@ export const getArticles = params => {
 		params
 	});
 }
+
+/**
+ * 添加点赞
+ * @param {string} slug 文章slug
+ * @returns 
+ */
+ export const favorite = slug => {
+	return request({
+		method: "POST",
+		url:`/articles/${slug}/favorite`
+	});
+}
+
+
+/**
+ * 取消点赞
+ * @param {string} slug 文章slug
+ * @returns 
+ */
+ export const cancelFavorite = slug => {
+	return request({
+		method: "DELETE",
+		url:`/articles/${slug}/favorite`
+	});
+}

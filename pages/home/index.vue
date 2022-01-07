@@ -54,12 +54,13 @@
 								<nuxt-link :to="`/profile/${article.author.username}}`" class="author">{{
 									article.author.username
 								}}</nuxt-link>
-								<span class="date">{{ article.updatedAt | data('MMM DD, YYYY') }}</span>
+								<span class="date">{{ article.updatedAt | data("MMM DD, YYYY") }}</span>
 							</div>
 							<button
 								class="btn btn-outline-primary btn-sm pull-xs-right"
 								:class="{ active: article.favorited }"
-								@click="handleLike"
+								:disabled="article.favoriteDisabled"
+								@click="handleLike(article)"
 							>
 								<i class="ion-heart"></i> {{ article.favoritesCount }}
 							</button>
@@ -117,7 +118,7 @@
 	</div>
 </template>
 <script>
-import { getArticles, getFeedArticles, getTag } from "@/api/article";
+import { getArticles, getFeedArticles, getTag, favorite, cancelFavorite } from "@/api/article";
 import { mapState } from "vuex";
 export default {
 	name: "HomePage",
@@ -148,10 +149,12 @@ export default {
 				}),
 				getTag(),
 			]);
-			
+
 			const { articles, articlesCount } = articleRes.data;
 			const { tags } = tagRes.data;
-
+			articles.forEach(article => {
+				article["favoriteDisabled"] = false;
+			});
 			return {
 				articles,
 				articlesCount,
@@ -175,7 +178,23 @@ export default {
 	},
 	methods: {
 		// 点赞
-		handleLike() {},
+		async handleLike(article) {
+			article.favoriteDisabled = true;
+			try {
+				if (article.favorited) {
+					await cancelFavorite(article.slug);
+					article.favorited = false;
+					article.favoritesCount--;
+				} else {
+					await favorite(article.slug);
+					article.favorited = true;
+					article.favoritesCount++;
+				}
+			} catch (error) {
+				console.log(error);
+			}
+			article.favoriteDisabled = false;
+		},
 	},
 };
 </script>
