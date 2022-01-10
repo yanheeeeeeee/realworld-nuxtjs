@@ -32,7 +32,7 @@ export const actions = {
 			const parsed = cookieparser.parse(req.headers.cookie);
 
 			try {
-				user = JSON.parse(parsed.user);
+				parsed.user && (user = JSON.parse(parsed.user))
 			} catch (error) {
 				console.log(error);
 			}
