@@ -2,7 +2,10 @@
   "name": "realworld-nuxtjs",
   "version": "1.0.0",
   "scripts": {
-    "dev": "nuxt"
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
   },
   "main": "index.js",
   "repository": "git@github.com:yanheeeeeeee/realworld-nuxtjs.git",

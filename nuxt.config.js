@@ -61,6 +61,10 @@ module.exports = {
 		},
 	},
 
+  server:{
+    host: '0.0.0.0',  // 监听所有网卡地址
+    post: 80        // 端口号
+  },
   // 注册插件
   plugins:['~/plugins/request.js', '~/plugins/dayjs.js']
 };
