@@ -4,14 +4,14 @@
 			<div class="container">
 				<div class="row">
 					<div class="col-xs-12 col-md-10 offset-md-1">
-						<img src="http://i.imgur.com/Qr71crq.jpg" class="user-img" />
-						<h4>Eric Simons</h4>
+						<img :src="profile.image" class="user-img" />
+						<h4>{{profile.username}}</h4>
 						<p>
-							Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the Hunger Games
+							{{profile.bio}}
 						</p>
 						<button class="btn btn-sm btn-outline-secondary action-btn">
 							<i class="ion-plus-round"></i>
-							&nbsp; Follow Eric Simons
+							&nbsp; Follow {{profile.username}}
 						</button>
 					</div>
 				</div>
@@ -73,10 +73,27 @@
 	</div>
 </template>
 <script>
+import { getProfile } from "@/api/profile";
 export default {
 	// 路由跳转当前页面时会自动调用该中间件进行校验
 	middleware: "auth",
 	name: "UserProfilePage",
+	async asyncData({ params, store }) {
+		try {
+			const username = params.username;
+			console.log(store.state.user.username);
+			const myself = params.username === store.state.user.username;
+			const { data } = await getProfile(username);
+			const profile = myself ? store.state.user : data.profile;
+			console.log(data);
+			return {
+				profile,
+				myself,
+			};
+		} catch (error) {
+			console.log(error);
+		}
+	},
 };
 </script>
 <style lang=""></style>

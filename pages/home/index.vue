@@ -49,9 +49,9 @@
 
 					<div class="article-preview" v-for="article in articles" :key="article.slug">
 						<div class="article-meta">
-							<nuxt-link :to="`/profile/${article.author.username}}`"><img :src="article.author.image" /></nuxt-link>
+							<nuxt-link :to="`/profile/${article.author.username}`"><img :src="article.author.image" /></nuxt-link>
 							<div class="info">
-								<nuxt-link :to="`/profile/${article.author.username}}`" class="author">{{
+								<nuxt-link :to="`/profile/${article.author.username}`" class="author">{{
 									article.author.username
 								}}</nuxt-link>
 								<span class="date">{{ article.updatedAt | data("MMM DD, YYYY") }}</span>
@@ -69,8 +69,14 @@
 							<h1>{{ article.title }}</h1>
 							<p>{{ article.description }}</p>
 							<span>Read more...</span>
+							<ul class="tag-list" v-for="tag in article.tagList" :key="tag">
+								<li class="tag-default tag-pill tag-outline">{{tag}}</li>
+								<li class="tag-default tag-pill tag-outline">{{tag}}</li>
+							</ul>
 						</nuxt-link>
 					</div>
+
+					<div class="article-preview" v-if="!articles.length">No articles are here... yet.</div>
 				</div>
 
 				<div class="col-md-3">
@@ -131,10 +137,11 @@ export default {
 	// 它返回的数据会合并到data中
 	async asyncData({ query, store }) {
 		try {
+			console.log(query);
 			const page = parseInt(query.page || 1);
 			const tab = query.tab || "global_feed";
 			const { tag } = query;
-			const limit = 1;
+			const limit = 20;
 
 			// 根据tab及登录状态获取首页全部内容或关注内容
 			const getArticlesTask = store.state.user && tab === "your_feed" ? getFeedArticles : getArticles;
