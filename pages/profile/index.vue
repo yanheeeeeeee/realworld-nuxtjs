@@ -5,13 +5,24 @@
 				<div class="row">
 					<div class="col-xs-12 col-md-10 offset-md-1">
 						<img :src="profile.image" class="user-img" />
-						<h4>{{profile.username}}</h4>
+						<h4>{{ profile.username }}</h4>
 						<p>
-							{{profile.bio}}
+							{{ profile.bio }}
 						</p>
-						<button class="btn btn-sm btn-outline-secondary action-btn">
+
+						<button v-if="myself" class="btn btn-sm btn-outline-secondary action-btn" @click="toSetting">
+							<i class="ion-gear-a"></i>
+							&nbsp; Edit Profile Settings
+						</button>
+
+						<button
+							v-else
+							class="btn btn-sm btn-outline-secondary action-btn"
+							:disabled="profile.followDisabled"
+							@click="followUser"
+						>
 							<i class="ion-plus-round"></i>
-							&nbsp; Follow {{profile.username}}
+							&nbsp; {{ profile.following ? "Unfollow" : "Follow" }}Follow {{ profile.username }}
 						</button>
 					</div>
 				</div>
@@ -73,7 +84,7 @@
 	</div>
 </template>
 <script>
-import { getProfile } from "@/api/profile";
+import { getProfile, followUser, unfollowUser } from "@/api/profile";
 export default {
 	// 路由跳转当前页面时会自动调用该中间件进行校验
 	middleware: "auth",
@@ -83,9 +94,14 @@ export default {
 			const username = params.username;
 			console.log(store.state.user.username);
 			const myself = params.username === store.state.user.username;
-			const { data } = await getProfile(username);
-			const profile = myself ? store.state.user : data.profile;
-			console.log(data);
+			let profile;
+			if (myself) {
+				profile = { ...store.state.user };
+			} else {
+				const { data } = await getProfile(username);
+				profile = data.profile;
+				profile.followDisabled = false;
+			}
 			return {
 				profile,
 				myself,
@@ -93,6 +109,20 @@ export default {
 		} catch (error) {
 			console.log(error);
 		}
+	},
+	methods: {
+		toSetting() {
+			this.$router.push({ name: "setting" });
+		},
+
+		async followUser() {
+			try {
+				this.profile.followDisabled = true;
+				this.profile.following ? await unfollowUser(this.profile.username) : await followUser(this.profile.username);
+				this.profile.following = !this.profile.following;
+			} catch (error) {}
+			this.profile.followDisabled = false;
+		},
 	},
 };
 </script>
