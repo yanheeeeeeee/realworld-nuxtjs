@@ -155,6 +155,7 @@ export default {
 
 		//tab切换事件
 		handleTabChange(val) {
+			if(this.articleLoading) return 
 			this.tab = val;
 			this.page = 1;
 			this.getArticles();
@@ -162,6 +163,7 @@ export default {
 
 		//page切换事件
 		handlePageChange(val) {
+			if(this.articleLoading) return 
 			this.page = val;
 			this.getArticles();
 		},

@@ -17,3 +17,20 @@ export const register = data => {
 		data
 	});
 }
+
+/**
+ * 修改用户资料
+ * @param {string} email 邮箱
+ * @param {string} username 用户名
+ * @param {string} bio 简介
+ * @param {string} image 头像图片
+ * @param {string} password 密码
+ * @returns 
+ */
+export const updateUser = data => {
+	return request({
+		method: "PUT",
+		url: "/user",
+		data
+	});
+}
