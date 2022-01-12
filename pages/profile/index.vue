@@ -35,64 +35,56 @@
 					<div class="articles-toggle">
 						<ul class="nav nav-pills outline-active">
 							<li class="nav-item">
-								<a class="nav-link active" href="">My Articles</a>
+								<span
+									class="nav-link"
+									:class="{ active: tab === 'my_articles' }"
+									@click="handleTabChange('my_articles')"
+									>My Articles</span
+								>
 							</li>
 							<li class="nav-item">
-								<a class="nav-link" href="">Favorited Articles</a>
+								<span
+									class="nav-link"
+									:class="{ active: tab === 'favorited_articles' }"
+									@click="handleTabChange('favorited_articles')"
+									>Favorited Articles</span
+								>
 							</li>
 						</ul>
 					</div>
 
-					<div class="article-preview">
-						<div class="article-meta">
-							<a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-							<div class="info">
-								<a href="" class="author">Eric Simons</a>
-								<span class="date">January 20th</span>
-							</div>
-							<button class="btn btn-outline-primary btn-sm pull-xs-right"><i class="ion-heart"></i> 29</button>
-						</div>
-						<a href="" class="preview-link">
-							<h1>How to build webapps that scale</h1>
-							<p>This is the description for the post.</p>
-							<span>Read more...</span>
-						</a>
-					</div>
-
-					<div class="article-preview">
-						<div class="article-meta">
-							<a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-							<div class="info">
-								<a href="" class="author">Albert Pai</a>
-								<span class="date">January 20th</span>
-							</div>
-							<button class="btn btn-outline-primary btn-sm pull-xs-right"><i class="ion-heart"></i> 32</button>
-						</div>
-						<a href="" class="preview-link">
-							<h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-							<p>This is the description for the post.</p>
-							<span>Read more...</span>
-							<ul class="tag-list">
-								<li class="tag-default tag-pill tag-outline">Music</li>
-								<li class="tag-default tag-pill tag-outline">Song</li>
-							</ul>
-						</a>
-					</div>
+					<article-preview :articles="articles" :loading="articleLoading"></article-preview>
 				</div>
 			</div>
+			<nav v-if="totalPage > 1">
+				<ul class="pagination offset-md-1">
+					<li class="page-item" :class="{ active: pageNum === page }" v-for="pageNum in totalPage" :key="pageNum">
+						<span
+							class="page-link"
+							@click="handlePageChange(pageNum)"
+							>{{ pageNum }}</span
+						>
+					</li>
+				</ul>
+			</nav>
 		</div>
 	</div>
 </template>
 <script>
 import { getProfile, followUser, unfollowUser } from "@/api/profile";
+import { getArticles } from "@/api/article";
+import articlePreview from "@/components/articlePreview";
 export default {
 	// 路由跳转当前页面时会自动调用该中间件进行校验
 	middleware: "auth",
 	name: "UserProfilePage",
+	watchQuery: ["page", "tab"],
+	components: {
+		articlePreview,
+	},
 	async asyncData({ params, store }) {
 		try {
 			const username = params.username;
-			console.log(store.state.user.username);
 			const myself = params.username === store.state.user.username;
 			let profile;
 			if (myself) {
@@ -110,6 +102,26 @@ export default {
 			console.log(error);
 		}
 	},
+	data() {
+		return {
+			tab: "my_articles",
+			page: 1,
+			articles: [],
+			articlesCount: 0,
+			limit: 20,
+			articleLoading: false,
+		};
+	},
+	computed: {
+		// 总页数
+		totalPage() {
+			return Math.ceil(this.articlesCount / this.limit) || 1;
+		},
+	},
+	mounted() {
+		this.getArticles();
+	},
+
 	methods: {
 		toSetting() {
 			this.$router.push({ name: "setting" });
@@ -122,6 +134,36 @@ export default {
 				this.profile.following = !this.profile.following;
 			} catch (error) {}
 			this.profile.followDisabled = false;
+		},
+
+		// 获取文章列表
+		async getArticles() {
+			this.articleLoading = true;
+			try {
+				const params = {
+					limit: this.limit,
+					offset: (this.page - 1) * this.limit,
+				};
+				params[this.tab === "favorited_articles" ? "favorited" : "author"] = this.profile.username;
+				const { data } = await getArticles(params);
+
+				this.articles = data.articles;
+				this.articlesCount = data.articlesCount;
+			} catch (error) {}
+			this.articleLoading = false;
+		},
+
+		//tab切换事件
+		handleTabChange(val) {
+			this.tab = val;
+			this.page = 1;
+			this.getArticles();
+		},
+
+		//page切换事件
+		handlePageChange(val) {
+			this.page = val;
+			this.getArticles();
 		},
 	},
 };

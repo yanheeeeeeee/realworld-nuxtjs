@@ -46,37 +46,8 @@
 							</li>
 						</ul>
 					</div>
-
-					<div class="article-preview" v-for="article in articles" :key="article.slug">
-						<div class="article-meta">
-							<nuxt-link :to="`/profile/${article.author.username}`"><img :src="article.author.image" /></nuxt-link>
-							<div class="info">
-								<nuxt-link :to="`/profile/${article.author.username}`" class="author">{{
-									article.author.username
-								}}</nuxt-link>
-								<span class="date">{{ article.updatedAt | data("MMM DD, YYYY") }}</span>
-							</div>
-							<button
-								class="btn btn-outline-primary btn-sm pull-xs-right"
-								:class="{ active: article.favorited }"
-								:disabled="article.favoriteDisabled"
-								@click="handleLike(article)"
-							>
-								<i class="ion-heart"></i> {{ article.favoritesCount }}
-							</button>
-						</div>
-						<nuxt-link :to="`/article/${article.slug}`" class="preview-link">
-							<h1>{{ article.title }}</h1>
-							<p>{{ article.description }}</p>
-							<span>Read more...</span>
-							<ul class="tag-list" v-for="tag in article.tagList" :key="tag">
-								<li class="tag-default tag-pill tag-outline">{{tag}}</li>
-								<li class="tag-default tag-pill tag-outline">{{tag}}</li>
-							</ul>
-						</nuxt-link>
-					</div>
-
-					<div class="article-preview" v-if="!articles.length">No articles are here... yet.</div>
+					
+					<article-preview :articles="articles"></article-preview>
 				</div>
 
 				<div class="col-md-3">
@@ -102,7 +73,7 @@
 				</div>
 			</div>
 
-			<nav>
+			<nav v-if="totalPage>1">
 				<ul class="pagination">
 					<li class="page-item" :class="{ active: pageNum === page }" v-for="pageNum in totalPage" :key="pageNum">
 						<nuxt-link
@@ -124,8 +95,9 @@
 	</div>
 </template>
 <script>
-import { getArticles, getFeedArticles, getTag, favorite, cancelFavorite } from "@/api/article";
+import { getArticles, getFeedArticles, getTag } from "@/api/article";
 import { mapState } from "vuex";
+import articlePreview from "@/components/articlePreview"
 export default {
 	name: "HomePage",
 	// 默认情况下, query参数改变不会重新触发asyncData方法
@@ -135,6 +107,9 @@ export default {
 	// asyncData 会在服务端渲染或者路由更新之前被调用
 	// 它的第一个参数为上下文context
 	// 它返回的数据会合并到data中
+	components:{
+		articlePreview
+	},
 	async asyncData({ query, store }) {
 		try {
 			console.log(query);
@@ -182,27 +157,7 @@ export default {
 		},
 
 		...mapState(["user"]),
-	},
-	methods: {
-		// 点赞
-		async handleLike(article) {
-			article.favoriteDisabled = true;
-			try {
-				if (article.favorited) {
-					await cancelFavorite(article.slug);
-					article.favorited = false;
-					article.favoritesCount--;
-				} else {
-					await favorite(article.slug);
-					article.favorited = true;
-					article.favoritesCount++;
-				}
-			} catch (error) {
-				console.log(error);
-			}
-			article.favoriteDisabled = false;
-		},
-	},
+	}
 };
 </script>
 <style></style>
