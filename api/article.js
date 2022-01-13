@@ -94,3 +94,20 @@ export const getArticles = params => {
 		url:`/articles/${slug}/comments`
 	});
 }
+
+
+/**
+ * 添加文章
+ * @param {string} title
+ * @param {string} description
+ * @param {string} body
+ * @param {array} tagList
+ * @returns 
+ */
+ export const ceateArticle = data => {
+	return request({
+		method: "POST",
+		url:`/articles`,
+		data
+	});
+}
