@@ -16,7 +16,7 @@
 			<hr />
 
 			<div class="article-actions">
-				<article-meta :article="article"></article-meta>
+				<article-meta :article="article" @favorite="handleLikeEnd" @follow="handleFollowUserEnd"></article-meta>
 			</div>
 
 			<div class="row">
@@ -62,7 +62,23 @@ export default {
 				},
 			],
 		};
-	}
+	},
+	methods: {
+		async handleFollowUserEnd() {
+			this.article.author.following = !this.article.author.following;
+		},
+
+		// 点赞
+		async handleLikeEnd() {
+			if (this.article.favorited) {
+				this.article.favorited = false;
+				this.article.favoritesCount--;
+			} else {
+				this.article.favorited = true;
+				this.article.favoritesCount++;
+			}
+		},
+	},
 };
 </script>
 <style lang=""></style>

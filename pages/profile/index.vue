@@ -22,7 +22,7 @@
 							@click="followUser"
 						>
 							<i class="ion-plus-round"></i>
-							&nbsp; {{ profile.following ? "Unfollow" : "Follow" }}Follow {{ profile.username }}
+							&nbsp; {{ profile.following ? "Unfollow" : "Follow" }} {{ profile.username }}
 						</button>
 					</div>
 				</div>
