@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="card comment-form" >
+		<div class="card comment-form">
 			<div class="card-block">
 				<textarea
 					class="form-control"
@@ -12,11 +12,13 @@
 			</div>
 			<div class="card-footer">
 				<img v-if="user" :src="user.image" class="comment-author-img" />
-				<button class="btn btn-sm btn-primary" @click="addComment" :disabled="!user || addDisabled">Post Comment</button>
+				<button class="btn btn-sm btn-primary" @click="addComment" :disabled="!user || addDisabled">
+					Post Comment
+				</button>
 			</div>
 		</div>
 
-		<div class="card" v-for="comment in comments" :key="comment.id">
+		<div class="card" v-for="(comment, i) in comments" :key="comment.id">
 			<div class="card-block">
 				<p class="card-text">{{ comment.body }}</p>
 			</div>
@@ -45,6 +47,9 @@
 					{{ comment.author.username }}
 				</nuxt-link>
 				<span class="date-posted">{{ comment.updateAt | data("MMM DD, YYYY") }}</span>
+				<span class="mod-options" v-if="comment.author.username === user.username" @click="delComment(comment.id, i)">
+					<i class="ion-trash-a"></i>
+				</span>
 			</div>
 		</div>
 	</div>
@@ -65,6 +70,7 @@ export default {
 			comments: [],
 			commentBody: "",
 			addDisabled: false,
+			delDisabled: false
 		};
 	},
 	computed: {
@@ -88,6 +94,16 @@ export default {
 			} catch (error) {}
 			this.addDisabled = false;
 		},
+
+		async delComment(id, index){
+			if(this.delDisabled) return
+			this.delDisabled = true;
+			try {
+				await delArticleComments(this.article.slug, id);
+				this.comments.splice(index, 1);
+			} catch (error) {}
+			this.delDisabled = false;
+		}
 	},
 };
 </script>
