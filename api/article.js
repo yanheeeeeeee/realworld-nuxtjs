@@ -115,6 +115,7 @@ export const getArticles = params => {
 
 /**
  * 编辑文章
+ * @param {string} slug
  * @param {string} title
  * @param {string} description
  * @param {string} body
@@ -126,5 +127,18 @@ export const getArticles = params => {
 		method: "PUT",
 		url:`/articles/${slug}`,
 		data: data
+	});
+}
+
+
+/**
+ * 删除文章
+ * @param {string} slug
+ * @returns 
+ */
+ export const delArticle = (slug) => {
+	return request({
+		method: "DELETE",
+		url:`/articles/${slug}`
 	});
 }

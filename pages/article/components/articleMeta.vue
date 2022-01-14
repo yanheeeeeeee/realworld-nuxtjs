@@ -57,13 +57,15 @@
 			</nuxt-link>
 
 			<!-- 删除文章 -->
-			<button class="btn btn-outline-danger btn-sm"><i class="ion-trash-a"></i> Delete Article</button>
+			<button class="btn btn-outline-danger btn-sm" :disabled="delDisabled" @click="delArticle">
+				<i class="ion-trash-a"></i> Delete Article
+			</button>
 		</template>
 	</div>
 </template>
 <script>
 import { followUser, unfollowUser } from "@/api/profile";
-import { favorite, cancelFavorite } from "@/api/article";
+import { favorite, cancelFavorite, delArticle } from "@/api/article";
 export default {
 	name: "aticleMeta",
 	props: {
@@ -76,7 +78,8 @@ export default {
 		return {
 			followDisabled: false,
 			favoriteDisabled: false,
-			myself: false
+			myself: false,
+			delDisabled: false
 		};
 	},
 	created(){
@@ -106,6 +109,15 @@ export default {
 			}
 			this.favoriteDisabled = false;
 		},
+
+		async delArticle(){
+			this.delDisabled = true
+			try {
+				await delArticle(this.article.slug)
+				this.$router.replace({name:'home'})
+			} catch (error) {}
+			this.delDisabled = false
+		}
 	},
 };
 </script>
