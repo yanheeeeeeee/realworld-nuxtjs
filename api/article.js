@@ -95,6 +95,33 @@ export const getArticles = params => {
 	});
 }
 
+/**
+ * 发表文章评论
+ * @param {string} slug 文章slug
+ * @param {string} body 
+ * @returns 
+ */
+ export const addArticleComments = (slug, data) => {
+	return request({
+		method: "POST",
+		url:`/articles/${slug}/comments`,
+		data: data
+	});
+}
+
+
+/**
+ * 删除我的评论
+ * @param {string} slug 文章slug
+ * @param {string} id 文章id
+ * @returns 
+ */
+ export const delArticleComments = (slug, id) => {
+	return request({
+		method: "DELETE",
+		url:`/articles/${slug}/comments/${id}`
+	});
+}
 
 /**
  * 添加文章
