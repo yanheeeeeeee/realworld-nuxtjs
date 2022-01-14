@@ -111,3 +111,20 @@ export const getArticles = params => {
 		data
 	});
 }
+
+
+/**
+ * 编辑文章
+ * @param {string} title
+ * @param {string} description
+ * @param {string} body
+ * @param {array} tagList
+ * @returns 
+ */
+ export const updateArticle = (slug, data) => {
+	return request({
+		method: "PUT",
+		url:`/articles/${slug}`,
+		data: data
+	});
+}

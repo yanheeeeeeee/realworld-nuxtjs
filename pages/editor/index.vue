@@ -8,7 +8,7 @@
 							<li v-for="(message, index) in messages" :key="index">{{key}} {{message}}</li>
 						</template>
 					</ul>
-					<form @submit.prevent="onSubmit">
+					<form>
 						<fieldset>
 							<fieldset class="form-group">
 								<input
@@ -40,57 +40,85 @@
 							<fieldset class="form-group">
 								<input
 									type="text"
-									v-model="article.tagList"
+									v-model="tag"
+									@keyup.enter="addTag"
 									:disabled="isloading"
 									class="form-control"
 									placeholder="Enter tags"
 								/>
-								<div class="tag-list"></div>
+								<div class="tag-list">
+									<span v-for="(tag, index) in article.tagList" :key="index" class="tag-default tag-pill ng-binding ng-scope">
+                  	<i class="ion-close-round" @click="removeTag(index)"></i>
+                  	{{tag}}
+                	</span>
+								</div>
 							</fieldset>
-							<button class="btn btn-lg pull-xs-right btn-primary" :disabled="isloading">Publish Article</button>
 						</fieldset>
 					</form>
+					<button class="btn btn-lg pull-xs-right btn-primary" @click="sava" :disabled="isloading">Publish Article</button>
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
-import { ceateArticle } from "@/api/article";
+import { getArticle, ceateArticle, updateArticle } from "@/api/article";
 export default {
-	middleware: "auth",
-	name: "EditorPage",
-	data() {
-		return {
-			article: {},
-			isloading: false,
-			errors:""
-		};
-	},
-	mounted() {
-		this.article = {
-			title: "",
-			description: "",
-			body: "",
-			tagList: ""
-		};
-	},
-	methods:{
-		async onSubmit(){
-			try {
-				this.isloading = true
-				const article = {...this.article}
-				article.tagList = article.tagList.split(' ')
-				const { data } = await ceateArticle({article});
-				// 重定向到文章页
-				this.$router.replace({path:`/article/${data.article.slug}`})
-			} catch (error) {
-				this.errors = error.response.data.errors;
-			}
-			
-			this.isloading = false
+  middleware: "auth",
+  name: "EditorPage",
+  data() {
+    return {
+      slug: "",
+      article: {},
+      tag: "",
+      isloading: false,
+      errors: "",
+    };
+  },
+  async created() {
+    this.slug = this.$route.params.slug;
+    let article;
+    if (this.slug) {
+      const { data: articleData } = await getArticle(this.slug);
+      article = articleData.article;
+    }
+    console.log(article);
+    this.article = {
+      title: article.title || "",
+      description: article.description || "",
+      body: article.body || "",
+      tagList: article.tagList || "",
+    };
+  },
+  mounted() {},
+  methods: {
+    async sava() {
+      try {
+        this.isloading = true;
+        const article = { ...this.article };
+
+        const { data } = this.slug
+          ? await updateArticle(this.slug, { article })
+          : await ceateArticle({ article });
+        // 重定向到文章页
+        this.$router.replace({ path: `/article/${data.article.slug}` });
+      } catch (error) {
+        this.errors = error.response.data.errors;
+      }
+
+      this.isloading = false;
+    },
+
+		addTag(){
+			this.article.tagList.push(this.tag)
+			this.tag = ""
+		},
+
+		removeTag(index){
+			if(this.isloading) return 
+			this.article.tagList.splice(index, 1)
 		}
-	}
+  },
 };
 </script>
 <style lang=""></style>

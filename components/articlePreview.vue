@@ -25,7 +25,6 @@
 					<span>Read more...</span>
 					<ul class="tag-list" v-for="tag in article.tagList" :key="tag">
 						<li class="tag-default tag-pill tag-outline">{{ tag }}</li>
-						<li class="tag-default tag-pill tag-outline">{{ tag }}</li>
 					</ul>
 				</nuxt-link>
 			</div>

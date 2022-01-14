@@ -48,6 +48,11 @@ module.exports = {
                 path:'editor',  
                 component: resolve(__dirname, "pages/editor"),
               },
+              // 编辑文章
+              {
+                path:'editor/:slug',  
+                component: resolve(__dirname, "pages/editor"),
+              },
               // 文章详情
               {
                 name:'article',

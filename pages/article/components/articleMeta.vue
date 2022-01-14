@@ -24,27 +24,41 @@
 			</nuxt-link>
 			<span class="date">{{ article.createdAt | data("MMM DD, YYYY") }}</span>
 		</div>
-		<button
-			class="btn btn-sm btn-outline-secondary"
-			:class="{ active: article.author.following }"
-			:disabled="followDisabled"
-			@click="handleFollowUser"
-		>
-			<i class="ion-plus-round"></i>
-			&nbsp; {{ article.author.following ? "Unfollow" : "Follow" }} {{ article.author.username }}
-			<span class="counter">({{ article.author.followedBy.length }})</span>
-		</button>
-		&nbsp;&nbsp;
-		<button
-			class="btn btn-sm btn-outline-primary"
-			:class="{ active: article.favorited }"
-			:disabled="favoriteDisabled"
-			@click="handleLike"
-		>
-			<i class="ion-heart"></i>
-			&nbsp; {{ article.favorited ? "Unfavorite" : "Favorite" }} Post
-			<span class="counter">({{ article.favoritesCount }})</span>
-		</button>
+		<template v-if="!myself">
+			<!-- 关注作者 -->
+			<button
+				class="btn btn-sm btn-outline-secondary"
+				:class="{ active: article.author.following }"
+				:disabled="followDisabled"
+				@click="handleFollowUser"
+			>
+				<i class="ion-plus-round"></i>
+				&nbsp; {{ article.author.following ? "Unfollow" : "Follow" }} {{ article.author.username }}
+				<span class="counter">({{ article.author.followedBy.length }})</span>
+			</button>
+			&nbsp;&nbsp;
+			<!-- 喜欢文章 -->
+			<button
+				class="btn btn-sm btn-outline-primary"
+				:class="{ active: article.favorited }"
+				:disabled="favoriteDisabled"
+				@click="handleLike"
+			>
+				<i class="ion-heart"></i>
+				&nbsp; {{ article.favorited ? "Unfavorite" : "Favorite" }} Post
+				<span class="counter">({{ article.favoritesCount }})</span>
+			</button>
+		</template>
+
+		<template v-if="myself">
+			<!-- 编辑文章 -->
+			<nuxt-link :to="`/editor/${article.slug}`">
+				<button class="btn btn-outline-secondary btn-sm"><i class="ion-edit"></i> Edit Article</button>
+			</nuxt-link>
+
+			<!-- 删除文章 -->
+			<button class="btn btn-outline-danger btn-sm"><i class="ion-trash-a"></i> Delete Article</button>
+		</template>
 	</div>
 </template>
 <script>
@@ -62,7 +76,12 @@ export default {
 		return {
 			followDisabled: false,
 			favoriteDisabled: false,
+			myself: false
 		};
+	},
+	created(){
+		const user = this.$store.state.user
+		this.myself = user && this.article.author.username === user.username
 	},
 	methods: {
 		async handleFollowUser() {

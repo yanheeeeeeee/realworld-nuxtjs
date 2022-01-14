@@ -17,7 +17,7 @@
 						</li>
 						<li class="nav-item">
 							<nuxt-link class="nav-link" :to="'/profile/' + user.username">
-								<img class="user-pic" :src="user.image||'/images/no-avatar.png'" />
+								<img class="user-pic" :src="user.image" />
 								{{ user.username }}
 							</nuxt-link>
 						</li>
