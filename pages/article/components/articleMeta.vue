@@ -66,6 +66,7 @@
 <script>
 import { followUser, unfollowUser } from "@/api/profile";
 import { favorite, cancelFavorite, delArticle } from "@/api/article";
+import { mapState } from "vuex";
 export default {
 	name: "aticleMeta",
 	props: {
@@ -82,12 +83,17 @@ export default {
 			delDisabled: false
 		};
 	},
+	computed:{
+		...mapState(['user'])
+	},
 	created(){
-		const user = this.$store.state.user
-		this.myself = user && this.article.author.username === user.username
+		this.myself = this.user && this.article.author.username === this.user.username
 	},
 	methods: {
 		async handleFollowUser() {
+			if(!this.user){
+				return this.$router.push({name:'login'})
+			}
 			this.followDisabled = true;
 			try {
 				this.article.author.following
@@ -100,6 +106,9 @@ export default {
 
 		// 点赞
 		async handleLike() {
+			if(!this.user){
+				return this.$router.push({name:'login'})
+			}
 			this.favoriteDisabled = true;
 			try {
 				this.article.favorited ? await cancelFavorite(this.article.slug) : await favorite(this.article.slug);

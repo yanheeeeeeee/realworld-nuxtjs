@@ -47,7 +47,7 @@
 					{{ comment.author.username }}
 				</nuxt-link>
 				<span class="date-posted">{{ comment.updateAt | data("MMM DD, YYYY") }}</span>
-				<span class="mod-options" v-if="comment.author.username === user.username" @click="delComment(comment.id, i)">
+				<span class="mod-options" v-if="user&&comment.author.username === user.username" @click="delComment(comment.id, i)">
 					<i class="ion-trash-a"></i>
 				</span>
 			</div>
