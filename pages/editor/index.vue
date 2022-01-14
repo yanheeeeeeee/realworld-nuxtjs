@@ -77,7 +77,7 @@ export default {
   },
   async created() {
     this.slug = this.$route.params.slug;
-    let article;
+    let article = {}
     if (this.slug) {
       const { data: articleData } = await getArticle(this.slug);
       article = articleData.article;
@@ -87,7 +87,7 @@ export default {
       title: article.title || "",
       description: article.description || "",
       body: article.body || "",
-      tagList: article.tagList || "",
+      tagList: article.tagList || [],
     };
   },
   mounted() {},
